@@ -5,6 +5,7 @@
     tools:context=".MainActivity">
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />
-    <item android:id="@+id/action_help" android:title="Help" />
+    <item android:id="@+id/action_help" android:title="Help"
+        app:showAsAction="never"/>
 
 </menu>

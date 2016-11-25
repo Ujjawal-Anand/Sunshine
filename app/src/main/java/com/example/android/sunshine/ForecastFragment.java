@@ -4,15 +4,18 @@ package com.example.android.sunshine;
  * Created by ujjawal on 22/11/16.
  */
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.text.format.Time;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,7 +24,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,6 +53,7 @@ public class ForecastFragment extends Fragment {
     private static String cityName;
     private static String latitude;
     private static String longitude;
+    private FrameLayout frameLayout;
 
     public ForecastFragment() {
     }
@@ -78,11 +86,43 @@ public class ForecastFragment extends Fragment {
             updateWeather();
         }
         else if(id == R.id.action_location) {
-            Intent intent = new Intent(getActivity(), LocationActivity.class);
-            intent.putExtra("cityKey", cityName);
-            intent.putExtra("lonKey", longitude);
-            intent.putExtra("latKey", latitude);
-            startActivity(intent);
+//            Intent intent = new Intent(getActivity(), LocationActivity.class);
+//            intent.putExtra("cityKey", cityName);
+//            intent.putExtra("lonKey", longitude);
+//            intent.putExtra("latKey", latitude);
+//            startActivity(intent);
+            // initialise a new instance of Layout inflater service
+            LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            // inflate the custom layout
+            View customView = inflater.inflate(R.layout.location_popup, null);
+            // initialise a new instance of popup window
+            final PopupWindow popupWindow = new PopupWindow(customView,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            // set an elevation value for popup window, requires API level 21 and beyond
+            if(Build.VERSION.SDK_INT >= 21) {
+                popupWindow.setElevation(5.0f);
+            }
+            ImageButton closeBtn = (ImageButton) customView.findViewById(R.id.btn_close);
+            TextView cityText = (TextView) customView.findViewById(R.id.city_text);
+            TextView lonText = (TextView) customView.findViewById(R.id.lon_text);
+            TextView latText = (TextView) customView.findViewById(R.id.lat_text);
+
+            cityText.setText(cityName);
+            lonText.setText(longitude);
+            latText.setText(latitude);
+
+            closeBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Dismiss the popup
+                    popupWindow.dismiss();
+
+                }
+            });
+            // finally show the popup window at the center location
+            popupWindow.showAtLocation(frameLayout, Gravity.CENTER,0,0);
+
 
         }
         return super.onOptionsItemSelected(item);
@@ -129,6 +169,7 @@ public class ForecastFragment extends Fragment {
 
         // Get a reference to the ListView, and attach this adapter to it.
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
+        frameLayout = (FrameLayout) rootView.findViewById(R.id.fragment_main_frame);
         listView.setAdapter(mForecastAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

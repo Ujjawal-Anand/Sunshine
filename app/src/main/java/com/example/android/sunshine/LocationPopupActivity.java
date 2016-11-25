@@ -8,6 +8,6 @@ public class LocationPopupActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_location_popup);
+        setContentView(R.layout.location_popup);
     }
 }

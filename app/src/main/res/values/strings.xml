@@ -3,4 +3,16 @@
     <string name="action_refresh" translatable="false">Refresh</string>
     <string name="hello_world">Hello World!</string>
     <string name="action_settings" translatable="false">Setting</string>
+    <string name="action_location" translatable="false">See Location</string>
+    <string name="pref_location_label">Location</string>
+    <string name="pref_location_key" translatable="false">location</string>
+    <string name="pref_location_default" translatable="false">Patna,in</string>
+    <string name="pref_temp_unit">Temperature Unit</string>
+    <string name="pref_temp_unit_key">temp_unit</string>
+    <string name="pref_temp_unit_default">metric</string>
+    <string name="pref_temp_unit_label_metric">Metric</string>
+    <string name="pref_temp_unit_metric">metric</string>
+    <string name="pref_temp_unit_label_imperial">Imperial</string>
+    <string name="pref_temp_unit_imperial">imperial</string>
+    <string name="title_activity_location">locationActivity</string>
 </resources>

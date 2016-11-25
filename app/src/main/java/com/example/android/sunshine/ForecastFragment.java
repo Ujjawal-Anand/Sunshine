@@ -5,9 +5,11 @@ package com.example.android.sunshine;
  */
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.text.format.Time;
 import android.util.Log;
@@ -20,7 +22,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,7 +35,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -43,6 +43,9 @@ import java.util.List;
 public class ForecastFragment extends Fragment {
 
     private ArrayAdapter<String> mForecastAdapter;
+    private static String cityName;
+    private static String latitude;
+    private static String longitude;
 
     public ForecastFragment() {
     }
@@ -52,6 +55,12 @@ public class ForecastFragment extends Fragment {
         super.onCreate(savedInstanceState);
         // Add this line in order for this fragment to handle menu events.
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateWeather();
     }
 
     @Override
@@ -66,11 +75,37 @@ public class ForecastFragment extends Fragment {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
-            FetchWeatherTask weatherTask = new FetchWeatherTask();
-            weatherTask.execute("Patna,in");
-            return true;
+            updateWeather();
+        }
+        else if(id == R.id.action_location) {
+            Intent intent = new Intent(getActivity(), LocationActivity.class);
+            intent.putExtra("cityKey", cityName);
+            intent.putExtra("lonKey", longitude);
+            intent.putExtra("latKey", latitude);
+            startActivity(intent);
+
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public String getLocation() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String location = prefs.getString(getString(R.string.pref_location_key),
+                getString(R.string.pref_location_default));
+        return location;
+    }
+
+    public boolean updateWeather() {
+        FetchWeatherTask weatherTask = new FetchWeatherTask();
+        weatherTask.execute(getLocation());
+        return true;
+    }
+
+    public String getTempreatureUnit() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String unit = prefs.getString(getString(R.string.pref_temp_unit_key),
+                getString(R.string.pref_temp_unit_default));
+        return unit;
     }
 
     @Override
@@ -78,16 +113,7 @@ public class ForecastFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         // Create some dummy data for the ListView.  Here's a sample weekly forecast
-        String[] data = {
-                "Mon 6/23 - Sunny - 31/17",
-                "Tue 6/24 - Foggy - 21/8",
-                "Wed 6/25 - Cloudy - 22/17",
-                "Thurs 6/26 - Rainy - 18/11",
-                "Fri 6/27 - Foggy - 21/10",
-                "Sat 6/28 - TRAPPED IN WEATHERSTATION - 23/18",
-                "Sun 6/29 - Sunny - 20/7"
-        };
-        List<String> weekForecast = new ArrayList<String>(Arrays.asList(data));
+        List<String> weekForecast = new ArrayList<String>();
 
         // Now that we have some dummy forecast data, create an ArrayAdapter.
         // The ArrayAdapter will take data from a source (like our dummy forecast) and
@@ -135,9 +161,16 @@ public class ForecastFragment extends Fragment {
         /**
          * Prepare the weather high/lows for presentation.
          */
-        private String formatHighLows(double high, double low) {
-            // For presentation, assume the user doesn't care about tenths of a degree.
-            long roundedHigh = Math.round(high);
+        private String formatHighLows(double high, double low, String unitTypes) {
+            // For presentation, assume the user doesn't care about tenths of a degree
+            if(unitTypes.equals(getString(R.string.pref_temp_unit_imperial))) {
+                high = (high * 1.8) + 32;
+                low = (low * 1.8) + 32;
+            }
+            else if(!unitTypes.equals(getString(R.string.pref_temp_unit_metric))) {
+                Log.d(LOG_TAG, "Unit type not found: "+ unitTypes);
+            }
+             long roundedHigh = Math.round(high);
             long roundedLow = Math.round(low);
 
             String highLowStr = roundedHigh + "/" + roundedLow;
@@ -161,9 +194,20 @@ public class ForecastFragment extends Fragment {
             final String OWM_MAX = "max";
             final String OWM_MIN = "min";
             final String OWM_DESCRIPTION = "main";
+            final String OWN_CITY = "city";
+            final String OWN_NAME = "name";
+            final String OWN_COORD = "coord";
+            final String OWN_LON = "lon";
+            final String OWN_LAT = "lat";
 
             JSONObject forecastJson = new JSONObject(forecastJsonStr);
             JSONArray weatherArray = forecastJson.getJSONArray(OWM_LIST);
+            JSONObject cityObject = forecastJson.getJSONObject(OWN_CITY);
+            cityName = cityObject.getString(OWN_NAME);
+            JSONObject locationObject = cityObject.getJSONObject(OWN_COORD);
+            longitude = locationObject.getString(OWN_LON);
+            latitude = locationObject.getString(OWN_LAT);
+
 
             // OWM returns daily forecasts based upon the local time of the city that is being
             // asked for, which means that we need to know the GMT offset to translate this data
@@ -210,7 +254,7 @@ public class ForecastFragment extends Fragment {
                 double high = temperatureObject.getDouble(OWM_MAX);
                 double low = temperatureObject.getDouble(OWM_MIN);
 
-                highAndLow = formatHighLows(high, low);
+                highAndLow = formatHighLows(high, low, getTempreatureUnit());
                 resultStrs[i] = day + " - " + description + " - " + highAndLow;
             }
 

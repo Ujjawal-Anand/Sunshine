@@ -1,23 +1,15 @@
 package com.example.android.sunshine;
 
-import android.content.Intent;
+import android.app.Activity;
 import android.preference.ListPreference;
-
-
-        import android.os.Bundle;
-        import android.preference.Preference;
-        import android.preference.PreferenceActivity;
-        import android.preference.PreferenceManager;
-
-/**
- * A {@link PreferenceActivity} that presents a set of application settings.
- * <p>
- * See <a href="http://developer.android.com/design/patterns/settings.html">
- * Android Design: Settings</a> for design guidelines and the <a
- * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
- * API Guide</a> for more information on developing a Settings UI.
- */
-public class SettingsActivity extends PreferenceActivity
+import android.preference.Preference;
+import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.widget.TextView;
+/*
+public class LocationActivity extends PreferenceActivity
         implements Preference.OnPreferenceChangeListener {
 
     @Override
@@ -25,9 +17,9 @@ public class SettingsActivity extends PreferenceActivity
         super.onCreate(savedInstanceState);
         // Add 'general' preferences, defined in the XML file
         // TODO: Add preferences from XML
-        addPreferencesFromResource(R.xml.pref_general);
-        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_location_key)));
-        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_temp_unit_key)));
+        addPreferencesFromResource(R.xml.pref_location);
+//        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_location_key)));
+//        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_temp_unit_key)));
         // TODO: Add preferences
     }
 
@@ -36,6 +28,7 @@ public class SettingsActivity extends PreferenceActivity
      * Also fires the listener once, to initialize the summary (so it shows up before the value
      * is changed.)
      */
+/*
     private void bindPreferenceSummaryToValue(Preference preference) {
         // Set the listener to watch for value changes.
         preference.setOnPreferenceChangeListener(this);
@@ -65,6 +58,33 @@ public class SettingsActivity extends PreferenceActivity
             preference.setSummary(stringValue);
         }
         return true;
+    }
+
+}
+*/
+
+public class LocationActivity extends Activity {
+    public LocationActivity() {
+
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_location);
+        Bundle extras = getIntent().getExtras();
+        String cityName = extras.getString("cityKey");
+        String longitude = extras.getString("lonKey");
+        String latitude = extras.getString("latKey");
+
+        TextView cityText = (TextView) findViewById(R.id.city_text);
+        TextView lonText = (TextView) findViewById(R.id.lon_text);
+        TextView latText = (TextView) findViewById(R.id.lat_text);
+
+        cityText.setText(cityName);
+        lonText.setText(longitude);
+        latText.setText(latitude);
+
     }
 
 }

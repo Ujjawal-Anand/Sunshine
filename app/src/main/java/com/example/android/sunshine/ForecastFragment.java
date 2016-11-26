@@ -38,8 +38,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.RoundingMode;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -105,12 +108,12 @@ public class ForecastFragment extends Fragment {
             }
             ImageButton closeBtn = (ImageButton) customView.findViewById(R.id.btn_close);
             TextView cityText = (TextView) customView.findViewById(R.id.city_text);
-            TextView lonText = (TextView) customView.findViewById(R.id.lon_text);
-            TextView latText = (TextView) customView.findViewById(R.id.lat_text);
+//            TextView locationText = (TextView) customView.findViewById(R.id.text_location);
+//            TextView latText = (TextView) customView.findViewById(R.id.lat_text);
 
-            cityText.setText(cityName);
-            lonText.setText(longitude);
-            latText.setText(latitude);
+            cityText.setText("City - "+cityName+"\n"+"("+decimalFormat(longitude)+", "+decimalFormat(latitude)+")");
+//            locationText.setText("("+longitude+", "+latitude+")");
+//            latText.setText(latitude);
 
             closeBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -126,6 +129,15 @@ public class ForecastFragment extends Fragment {
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public static String decimalFormat(String str) {
+        Number n = Double.parseDouble(str);
+        NumberFormat format = DecimalFormat.getInstance();
+        format.setRoundingMode(RoundingMode.FLOOR);
+        format.setMinimumFractionDigits(0);
+        format.setMaximumFractionDigits(2);
+        return format.format(n);
     }
 
     public String getLocation() {

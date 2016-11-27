@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -111,9 +112,18 @@ public class ForecastFragment extends Fragment {
 //            TextView locationText = (TextView) customView.findViewById(R.id.text_location);
 //            TextView latText = (TextView) customView.findViewById(R.id.lat_text);
 
-            cityText.setText("City - "+cityName+"\n"+"("+decimalFormat(longitude)+", "+decimalFormat(latitude)+")");
+            cityText.setText("City - "+cityName+"\n"+"("+decimalFormat(longitude)+" lon, "+decimalFormat(latitude)+" lat)");
 //            locationText.setText("("+longitude+", "+latitude+")");
 //            latText.setText(latitude);
+            Button showMapBtn = (Button) customView.findViewById(R.id.btn_show_map);
+            final Uri locationUri = Uri.parse("geo:"+latitude+","+longitude);
+            showMapBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showMap(locationUri);
+
+                }
+            });
 
             closeBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -129,6 +139,14 @@ public class ForecastFragment extends Fragment {
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void showMap(Uri geoLocation) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(geoLocation);
+        if (intent.resolveActivity(getContext().getPackageManager()) != null) {
+            startActivity(intent);
+        }
     }
 
     public static String decimalFormat(String str) {

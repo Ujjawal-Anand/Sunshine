@@ -7,5 +7,11 @@
         android:orderInCategory="100" app:showAsAction="never" />
     <item android:id="@+id/action_help" android:title="Help"
         app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_share"
+        app:showAsAction="ifRoom"
+        android:title="@string/action_share"
+        android:actionProviderClass=
+            "android.widget.ShareActionProvider" />
 
 </menu>

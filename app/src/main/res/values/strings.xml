@@ -4,6 +4,7 @@
     <string name="hello_world">Hello World!</string>
     <string name="action_settings" translatable="false">Setting</string>
     <string name="action_location" translatable="false">See Location</string>
+    <string name="action_share" translatable="false">Share</string>
     <string name="pref_location_label">Location</string>
     <string name="pref_location_key" translatable="false">location</string>
     <string name="pref_location_default" translatable="false">Patna,in</string>
@@ -15,4 +16,5 @@
     <string name="pref_temp_unit_label_imperial">Imperial</string>
     <string name="pref_temp_unit_imperial">imperial</string>
     <string name="title_activity_location">locationActivity</string>
+    <string name="show_map">Show On Map</string>
 </resources>
